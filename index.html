@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Biblioteca-IMPCV </title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Poppins SemiBold for titles and Roboto Flex Regular for body text -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Roboto+Flex:opsz,wght@8..144,400&display=swap" rel="stylesheet">
+    <!-- Montserrat for system content -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiSPqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoVBL5gI9kLmbG0C+wFjrSdoK2gwgw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4DNTlrdUmTzrDgektczlKNRRhy5X5AAOnx5S09ydFYWWNSfcEqDTTHgtNA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js" crossorigin="anonymous"></script>
+    <!-- Add app icon / manifest for "Add to Home screen" and pinned shortcuts -->
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/link.hrefIMG_20251018_044950.jpg">
+    <meta name="theme-color" content="#0A66FF">
+    <meta name="msapplication-TileImage" content="/link.hrefIMG_20251018_044950.jpg">
+</head>
+<body>
+    <nav class="top-nav" role="navigation" aria-label="Menu fixo principal">
+        <div class="logo">
+            <div class="brand">IMPCV</div>
+            <div class="brand-sub">Biblioteca virtual</div>
+        </div>
+
+        <!-- Compact top menu: hamburger button that opens a popup with Biblioteca, Redes, Contactos, Definições and Sair -->
+        <div class="top-nav-contact" aria-hidden="false" style="display:flex;align-items:center;gap:8px;position:relative;">
+            <div id="anniv-badge" title="10 anos — Instituto" aria-hidden="false" role="img">
+              <div class="anniv-inner">
+                <div class="anniv-ring">10</div>
+                <div class="anniv-text"><strong>ANOS</strong><span>de Excelência</span></div>
+              </div>
+            </div>
+
+            <!-- Menu toggle button -->
+            <button id="top-menu-btn" class="robot-btn" title="Menu" aria-expanded="false" aria-haspopup="true" aria-controls="top-menu-popup">☰</button>
+
+            <!-- Small contact & action buttons (kept for quick access) -->
+            <button id="contact-robot-btn" class="robot-btn" title="Contactos do IMPCV" aria-expanded="false" aria-haspopup="true">🤖</button>
+            <button id="feedback-robot-btn" class="robot-btn" title="Reclamação / Sugestão" aria-expanded="false" aria-haspopup="true">💬</button>
+            <button id="admin-btn" class="robot-btn" title="Painel Administrador" aria-expanded="false" aria-haspopup="true">🔒</button>
+
+            <!-- Top menu popup (hidden by default) -->
+            <div id="top-menu-popup" role="menu" aria-hidden="true" style="display:none; position:absolute; top:56px; right:8px; width:260px; background:#fff; border-radius:10px; box-shadow:0 10px 30px rgba(0,0,0,0.18); z-index:1400; padding:10px; border:1px solid rgba(0,0,0,0.06);">
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                
+
+                <!-- NEW modern desktop-like access button that opens the portal in a centered, minimal window -->
+                <button id="menu-acessar-biblioteca" class="action-btn" role="menuitem" style="display:flex;align-items:center;gap:10px;justify-content:flex-start;background:linear-gradient(90deg,#0A66FF,#0056d9);font-weight:800;border-radius:10px;padding:8px 10px;">
+                  🚀 Acessar Biblioteca
+                </button>
+
+                <button id="menu-redes" class="action-btn" role="menuitem" style="display:flex;align-items:center;gap:10px;justify-content:flex-start;">🌐 Redes Sociais</button>
+                <button id="menu-contactos" class="action-btn" role="menuitem" style="display:flex;align-items:center;gap:10px;justify-content:flex-start;">📞 Contactos do Instituto</button>
+                <button id="menu-settings" class="action-btn" role="menuitem" style="display:flex;align-items:center;gap:10px;justify-content:flex-start;">⚙️ Definições</button>
+                <button id="menu-logout" class="action-btn" role="menuitem" style="display:flex;align-items:center;gap:10px;justify-content:flex-start;background:#c0392b !important;">⮐ Sair do sistema</button>
+              </div>
+            </div>
+
+            <!-- Inline Robo de Reclamação / Sugestão moved into header (hidden by default) -->
+            <div id="roboChatInline" style="position:relative; margin-left:10px; display:inline-block;">
+              <div id="roboChatHeader" style="display:none; position:absolute; top:48px; right:0; width:360px; background:#f5f5f5;border-radius:12px;padding:10px;box-shadow:0 6px 18px rgba(0,0,0,0.18); z-index:1300;">
+                <div style="background:#0078d7;color:white;padding:8px 12px;border-radius:10px;margin-bottom:8px;">
+                  Olá! Para começarmos, informe seu Nome, Curso e Turma — em seguida abriremos o Gmail para envio:
+                </div>
+                <input type="text" id="userNameHeader" placeholder="Nome completo" style="width:100%;padding:8px;border-radius:8px;border:1px solid #ccc;margin-bottom:8px;">
+                <input type="text" id="userCourseHeader" placeholder="Curso (ex.: CV5 Medicina Geral)" style="width:100%;padding:8px;border-radius:8px;border:1px solid #ccc;margin-bottom:8px;">
+                <input type="text" id="userTurmaHeader" placeholder="Turma (ex.: Turma A / 2025)" style="width:100%;padding:8px;border-radius:8px;border:1px solid #ccc;margin-bottom:8px;">
+                <div style="display:flex;gap:8px;">
+                  <button id="openMailClientBtn" style="background:#00c851;color:white;padding:8px 12px;border:none;border-radius:8px;cursor:pointer;flex:1;">Abrir Gmail / Enviar</button>
+                  <button id="closeRoboHeaderBtn" style="background:#ccc;color:#003f8a;padding:8px 12px;border:none;border-radius:8px;cursor:pointer;">✕</button>
+                </div>
+                <div id="alertMsgHeader" style="color:red;margin-top:6px;display:none;font-size:13px;"></div>
+              </div>
+            </div>
+        </div>
+    </nav>
+    <div id="welcome-screen" class="phone-frame">
+        <header class="welcome-header">
+            <div style="text-align:center; margin:20px 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+  <!-- IMPCV -->
+  <h1 class="hero-title" style="
+      font-size:48px; 
+      font-weight:800;
+      font-family: 'Poppins', sans-serif;
+      text-transform:uppercase; 
+      letter-spacing:6px; 
+      /* color moved to CSS for better contrast against background */
+      margin:0;
+  ">IMPCV</h1>
+
+  <!-- BIBLIOTECA VIRTUAL -->
+  <h2 class="hero-sub" style="
+      font-size:20px; 
+      font-weight:500;
+      font-family: 'Poppins', sans-serif;
+      text-transform:uppercase; 
+      letter-spacing:3px; 
+      /* color moved to CSS for better contrast against background */
+      margin-top:8px;
+  ">BIBLIOTECA VIRTUAL</h2>
+</div>
+        </header>
+        <div class="welcome-content">
+            <!-- Instituição movida para o rodapé do menu principal -->
+
+        </div>
+        <div class="welcome-actions">
+            <!-- top social buttons removed — footer links are the canonical social links now -->
+            <button id="menu-up" class="menu-scroll-btn" aria-label="Descer menu">▲</button>
+            <div class="welcome-actions-inner">
+                <nav class="main-nav" aria-label="Menu principal">
+                  <div class="select-bar" role="group" aria-label="Menu principal" style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+                    <!-- Biblioteca portal removed per request -->
+                  </div>
+                </nav>
+            </div>
+            <button id="menu-down" class="menu-scroll-btn" aria-label="Subir menu">▼</button>
+        </div>
+        <div class="welcome-footer" aria-hidden="false">
+            <!-- Instituição removida per user request; kept space minimal to preserve phone-frame layout -->
+        </div>
+    </div>
+
+    <!-- Contact robot popup (injected near footer for easier content sync) -->
+    <div id="contact-robot-popup" class="contact-robot-popup" role="dialog" aria-hidden="true" aria-label="Contactos do IMPCV"></div>
+
+    <!-- NEW: Feedback (Reclamação / Sugestão) popup -->
+    <div id="feedback-robot-popup" class="contact-robot-popup" role="dialog" aria-hidden="true" aria-label="Reclamação ou Sugestão" style="display:none;">
+      <div style="max-width:360px; padding:8px;">
+        <h3 style="margin:6px 0 10px 0;">Reclamação / Sugestão</h3>
+        <form id="feedback-form" style="display:flex;flex-direction:column;gap:8px;">
+          <label style="font-size:0.95rem;">Assunto
+            <input id="feedback-subject" type="text" placeholder="Assunto breve" required style="width:100%;padding:8px;border-radius:6px;border:1px solid #e6eef8;">
+          </label>
+          <label style="font-size:0.95rem;">Mensagem
+            <textarea id="feedback-message" rows="5" placeholder="Escreva a sua reclamação ou sugestão aqui..." required style="width:100%;padding:8px;border-radius:6px;border:1px solid #e6eef8;"></textarea>
+          </label>
+          <!-- NEW: Nome, Curso e Contacto -->
+          <label style="font-size:0.95rem;">Nome
+            <input id="feedback-name" type="text" placeholder="Seu nome" style="width:100%;padding:8px;border-radius:6px;border:1px solid #e6eef8;">
+          </label>
+          <label style="font-size:0.95rem;">Curso
+            <input id="feedback-course" type="text" placeholder="Curso (ex.: CV5 Medicina Geral)" style="width:100%;padding:8px;border-radius:6px;border:1px solid #e6eef8;">
+          </label>
+          <label style="font-size:0.95rem;">Turma
+            <input id="feedback-turma" type="text" placeholder="Turma (ex.: Turma A / 2025)" style="width:100%;padding:8px;border-radius:6px;border:1px solid #e6eef8;">
+          </label>
+          <label style="font-size:0.95rem;">Contacto
+            <input id="feedback-contact" type="text" placeholder="Telefone ou outro contacto" style="width:100%;padding:8px;border-radius:6px;border:1px solid #e6eef8;">
+          </label>
+          <!-- NEW: readonly 'Enviar para' field showing the recipient address -->
+          <label style="font-size:0.95rem; display:flex; flex-direction:column; gap:6px;">
+            Enviar para
+            <input id="feedback-to" type="text" readonly value="mensageirosftmoz@gmail.com" style="width:100%;padding:8px;border-radius:6px;border:1px solid #e6eef8;background:#f4f7fb;color:#003f8a;font-weight:700;">
+          </label>
+          <label style="font-size:0.95rem;">Email (obrigatório)
+            <input id="feedback-email" type="email" placeholder="seu@email.com" required style="width:100%;padding:8px;border-radius:6px;border:1px solid #e6eef8;">
+          </label>
+          <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:6px;">
+            <button type="button" id="feedback-cancel" class="action-btn" style="background:#ccc;color:#003f8a;">Cancelar</button>
+            <button type="submit" id="feedback-send" class="action-btn">Enviar</button>
+          </div>
+          <div id="feedback-status" aria-live="polite" style="margin-top:8px;font-size:0.95rem;display:none;"></div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Study links popup: videos, audios and online resources -->
+    <div id="study-popup" class="contact-robot-popup" role="dialog" aria-hidden="true" aria-label="Recursos de Estudo" style="display:none;">
+      <div style="max-width:360px; padding:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <h3 style="margin:0;color:#0A66FF;font-size:1rem;">Recursos de Estudo</h3>
+          <button id="study-close" class="robot-btn" title="Fechar" aria-label="Fechar">✕</button>
+        </div>
+
+        <!-- NEW: course selector to filter study resources -->
+        <div style="margin-bottom:10px;">
+          <label for="study-course-select" style="font-weight:700;display:block;margin-bottom:6px;">Escolher Curso</label>
+          <select id="study-course-select" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e6eef8;background:#fff;">
+            <option value="">— Todos os Cursos —</option>
+            <!-- options inserted by JS -->
+          </select>
+        </div>
+
+        <div id="study-resources-wrap" style="display:grid;gap:10px;">
+          <!-- resources per course populated by JS -->
+        </div>
+
+        <div id="study-status" style="margin-top:8px;font-size:0.92rem;color:#666;display:none;"></div>
+      </div>
+    </div>
+
+    <div id="courses-screen" style="display: none;">
+        <!-- ...existing content... -->
+        <header class="welcome-header courses-header">
+            <div class="brand-and-course">
+                <div class="brand">IMPCV</div>
+                <input id="courses-search" type="search" placeholder="Pesquisar cursos..." aria-label="Pesquisar cursos" style="padding:8px 10px;border-radius:8px;border:1px solid #e6eef8;max-width:520px;width:100%;font-size:0.95rem;background:#fff;">
+            </div>
+        </header>
+        <button id="back-to-welcome-btn" class="back-btn back-btn-courses" title="Voltar para Início">‹</button>
+        <div class="courses-content">
+            <div class="courses-grid">
+                <button class="action-btn course-btn" data-course="CV5 em Medicina Geral" data-type="exames">CV5 em Medicina Geral</button>
+                <button class="action-btn course-btn" data-course="CV5 em Medicina Preventiva/SM" data-type="topicos">CV5 em Medicina Preventiva/SM</button>
+                <button class="action-btn course-btn" data-course="CV5 em Enfermagem Geral" data-type="topicos">CV5 em Enfermagem Geral</button>
+                <button class="action-btn course-btn" data-course="CV5 em Enfermagem de Saúde Materno Infantil" data-type="topicos">CV5 em Enfermagem de Saúde Materno Infantil</button>
+                <button class="action-btn course-btn" data-course="CV5 em Farmácia" data-type="topicos">CV5 em Farmácia</button>
+                <button class="action-btn course-btn" data-course="CV5 em Técnicas de Laboratórios de Análises Clínicas" data-type="exames">CV5 em Técnicas de Laboratórios de Análises Clínicas</button>
+                <button class="action-btn course-btn" data-course="CV3 a CV5 em Gestão" data-type="topicos">CV3 a CV5 em Gestão</button>
+                <button class="action-btn course-btn" data-course="CV4 a CV5 em Gestão autárquica (Ad. Pública)" data-type="topicos">CV4 a CV5 em Gestão autárquica (Ad. Pública)</button>
+                <button class="action-btn course-btn" data-course="CV4 a CV5 em Gestão de Recursos Humanos" data-type="topicos">CV4 a CV5 em Gestão de Recursos Humanos</button>
+                <button class="action-btn course-btn" data-course="CV4 em Suporte Informático" data-type="topicos">CV4 em Suporte Informático</button>
+                <button class="action-btn course-btn" data-course="CV5 em Administração de Gestão de Redes" data-type="topicos">CV5 em Administração de Gestão de Redes</button>
+                <button class="action-btn course-btn" data-course="CV5 em Programação de Aplicações de WEB" data-type="topicos">CV5 em Programação de Aplicações de WEB</button>
+                <button class="action-btn course-btn" data-course="CV5 em Nutrição" data-type="topicos">CV5 em Nutrição</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="login-screen" style="display: none;">
+        <div class="login-box">
+            <h1>IMPCV</h1>
+            <!-- removed subtitle per user request -->
+            <form id="login-form">
+                <input type="text" placeholder="Nome de usuário" required>
+                <input type="password" placeholder="Senha" required>
+                <button type="submit">Entrar</button>
+                <a href="#" id="create-account-link">Criar conta</a>
+            </form>
+        </div>
+    </div>
+
+    <div id="app" style="display: none;">
+        <header>
+            <div class="header-content">
+                <button id="back-to-courses-btn" class="back-btn" title="Voltar para Cursos">‹</button>
+                <div>
+                    <h1>IMPCV</h1>
+                    <!-- subtitle removed per user request -->
+                </div>
+            </div>
+        </header>
+        <main>
+            <div class="search-container">
+                <div class="search-controls">
+                    <input type="search" id="search-input" placeholder="Pesquise por módulo ou conteúdos">
+                    <div class="select-wrapper">
+                        <select id="exam-select">
+                            <option value="">Selecionar Módulos</option>
+                        </select>
+                    </div>
+                </div>
+                <button id="search-btn" class="search-btn">Pesquisar</button>
+                <button id="export-pdf-btn" class="export-btn" title="Exportar resultados para PDF">Exportar PDF</button>
+            </div>
+            <div id="breadcrumb"></div>
+            <div id="results-container"></div>
+        </main>
+    </div>
+
+    <div id="diseases-screen" style="display: none;">
+         <header>
+            <div class="header-content">
+                <button id="back-to-welcome-from-diseases-btn" class="back-btn" title="Voltar para Início">‹</button>
+                <div>
+                    <h1>Doenças</h1>
+                    <p>Informações e Artigos</p>
+                </div>
+            </div>
+        </header>
+        <main>
+            <div style="padding:12px;">
+               <div class="select-wrapper">
+                 <select id="disease-select">
+                   <option value="">Ou selecione uma doença...</option>
+                 </select>
+               </div>
+             </div>
+            <div id="diseases-results-container"></div>
+        </main>
+    </div>
+
+    <div id="simulators-screen" style="display: none;">
+        <header class="welcome-header">
+            <div class="brand-and-course">
+                <div class="brand">IMPCV — Simuladores</div>
+            </div>
+        </header>
+        <button id="back-from-simulators" class="back-btn" title="Voltar">‹</button>
+        <main style="padding:22px; max-width:900px; margin:0 auto;">
+            <h2 style="color:var(--primary-color); margin-bottom:12px;">Simuladores Práticos</h2>
+            <p>Selecione um curso abaixo para aceder aos simuladores práticos relacionados; utilize a pesquisa para localizar rapidamente disciplinas ou actividades. Abra o "Guia dos Simuladores" para instruções detalhadas e recomendações de utilização.</p>
+            <div style="display:flex; justify-content:center; margin-top:12px;">
+                <button id="simulators-guide-folder" class="category-folder" aria-label="Abrir Guia dos Simuladores" title="Abrir Guia">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <div style="font-size:2rem;">📁</div>
+                        <div style="text-align:left;">
+                            <div style="font-weight:800; color:var(--primary-color);">Guia dos Simuladores</div>
+                            <div style="font-size:0.95rem; color:#45607a;">Clique para abrir instruções e orientações de uso</div>
+                        </div>
+                    </div>
+                </button>
+            </div>
+            <div class="simulators-select-wrap" style="display:flex; justify-content:center; margin-top:12px;">
+                <div class="illustrative-select">
+                  <div class="select-graphic" aria-hidden="true">🎯</div>
+                  <select id="simulators-course-select" class="course-select" aria-label="Selecionar curso para simuladores">
+                      <option value="">Clique para selecionar o curso</option>
+                  </select>
+                </div>
+            </div>
+            <div id="simulators-list" style="display:none; gap:12px; margin-top:18px;" aria-hidden="true"></div>
+        </main>
+    </div>
+
+    <div id="manuals-screen" style="display: none;">
+        <header class="welcome-header">
+            <div class="brand-and-course">
+                <div class="brand">IMPCV — Manuais</div>
+            </div>
+        </header>
+        <button id="manuals-back-to-main" class="back-btn" title="Voltar ao Menu Principal" aria-label="Voltar ao Menu Principal">‹</button>
+        <main style="padding:22px; max-width:900px; margin:72px auto 20px;">
+            <h2 style="color:#ffffff; margin-bottom:12px;">Manuais</h2>
+            <p style="color:#ffffff;">Lista de manuais e guias disponíveis para consulta e download.</p>
+            <div style="margin:10px 0; display:flex; gap:8px; align-items:center;">
+             <!-- Lista de cursos removida conforme solicitado -->
+            <button id="manuals-folder-geral" class="action-btn" aria-label="Abrir pasta Geral">📁 Geral</button>
+            </div>
+
+           <!-- Busca rápida de manuais -->
+           <div style="margin:10px 0; display:flex; gap:8px; align-items:center;">
+             <input id="manual-search" type="search" placeholder="Pesquisar manuais..." aria-label="Pesquisar manuais" style="flex:1; padding:8px 10px; border-radius:8px; border:1px solid #e6eef8; max-width:520px;">
+           </div>
+            
+            <div id="manuals-list" style="display:grid; gap:10px; margin-top:14px; grid-template-columns: repeat(auto-fit, minmax(240px,1fr));"></div>
+        </main>
+    </div>
+
+    <div id="guide-screen" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width:900px;">
+            <button id="guide-back-btn" class="back-btn" title="Voltar">‹</button>
+            <h2>Guia do Sistema — Como usar</h2>
+            <div class="tutorial-section">
+                <h3>Objetivo</h3>
+                <p>Explicar a utilização do sistema, conteúdo disponível e objetivos pedagógicos.</p>
+            </div>
+            <div class="tutorial-section">
+                <h3>O que tem dentro do sistema</h3>
+                <ul>
+                    <li>Lista de cursos e módulos</li>
+                    <li>Simuladores (coleta, interpretação, avaliações automáticas)</li>
+                    <li>Biblioteca virtual com exames e artigos</li>
+                    <li>Geração de PDFs e impressão de cartões informativos</li>
+                </ul>
+            </div>
+            <div class="tutorial-section">
+                <h3>Como utilizar</h3>
+                <ol>
+                    <li>Selecione o curso em "Menu Curso".</li>
+                    <li>Escolha cadeira/módulo para gerar exercícios/avaliacões automaticamente.</li>
+                    <li>Use "Simuladores" para práticas de coleta e interpretação.</li>
+                    <li>Abra o exame para ver recipientes, instruções e áudio explicativo.</li>
+                </ol>
+            </div>
+
+            <div class="tutorial-section" id="guide-changelog-section">
+                <h3>Changelog — Novas funcionalidades</h3>
+                <p id="guide-changelog-empty" style="color:#444;">Nenhuma atualização registada ainda. Novas funcionalidades serão listadas aqui.</p>
+                <ul id="guide-changelog" style="list-style: none; padding-left: 0; margin-top: 8px;"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "main": "./main.js"
+        }
+    }
+    </script>
+    <script type="module" src="./main.js"></script>
+
+    <!-- Footer replaced with quick access to Biblioteca (Portal de Acesso) -->
+    <section id="contactos" style="background:transparent; padding:36px 20px; text-align:center; color:#003366;">
+      <h2 style="font-size:20px; margin-bottom:12px; text-transform:uppercase; color:#ffffff; text-shadow:0 1px 2px rgba(0,0,0,0.35)">Portal de Acesso</h2>
+      <!-- Portal de Acesso removido; use os links abaixo para redes e contactos -->
+
+      <!-- Social links placed under the Biblioteca button as requested -->
+      <div class="redes" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px;">
+        <a href="https://www.facebook.com/" target="_blank" rel="noopener" aria-label="Facebook" style="padding:10px 14px;border-radius:8px;background:var(--access-blue);color:#fff;font-weight:800;display:inline-flex;align-items:center;gap:8px;box-shadow:0 8px 22px rgba(0,0,0,0.08);">
+          <span aria-hidden="true">📘</span><span style="font-size:0.95rem;">Facebook</span>
+        </a>
+        <a href="https://www.instagram.com/" target="_blank" rel="noopener" aria-label="Instagram" style="padding:10px 14px;border-radius:8px;background:var(--access-blue);color:#fff;font-weight:800;display:inline-flex;align-items:center;gap:8px;box-shadow:0 8px 22px rgba(0,0,0,0.08);">
+          <span aria-hidden="true">📸</span><span style="font-size:0.95rem;">Instagram</span>
+        </a>
+        <a href="https://www.tiktok.com/" target="_blank" rel="noopener" aria-label="TikTok" style="padding:10px 14px;border-radius:8px;background:var(--access-blue);color:#fff;font-weight:800;display:inline-flex;align-items:center;gap:8px;box-shadow:0 8px 22px rgba(0,0,0,0.08);">
+          <span aria-hidden="true">🎵</span><span style="font-size:0.95rem;">TikTok</span>
+        </a>
+        <a href="https://www.youtube.com/" target="_blank" rel="noopener" aria-label="YouTube" style="padding:10px 14px;border-radius:8px;background:var(--access-blue);color:#fff;font-weight:800;display:inline-flex;align-items:center;gap:8px;box-shadow:0 8px 22px rgba(0,0,0,0.08);">
+          <span aria-hidden="true">▶️</span><span style="font-size:0.95rem;">YouTube</span>
+        </a>
+      </div>
+
+      <!-- Hidden fallback Biblioteca footer button used by menu handler (kept visually hidden) -->
+      <a id="biblioteca-footer-btn" href="https://fhhnsjjjfhnnmkkkkugdsfhjkkjjfdghjjhh.base44.app/Dashboard" target="_blank" rel="noopener" style="display:none;" aria-hidden="true">Portal de Acesso — Biblioteca (fallback)</a>
+    </section>
+
+    <!-- Hidden contact details used only by the contact robot popup -->
+    <div id="robot-contacts" style="display:none;">
+      <div style="font-size:16px; line-height:1.8; color:#003366; max-width:900px; margin:0 auto; padding:12px;">
+        <!-- Phone image added for the contact robot (visible when popup clones this block) -->
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4f1.png" alt="Ícone de telemóvel" style="width:56px;height:56px;border-radius:8px;object-fit:cover;box-shadow:0 6px 18px rgba(0,0,0,0.12);">
+          <div style="font-size:14px;color:#00345c;">
+            <div style="font-weight:700">Contacto Rápido</div>
+            <div style="font-size:13px;color:#446">Clique no botão para abrir WhatsApp ou enviar mensagem.</div>
+          </div>
+        </div>
+
+        <p><strong>E-mails:</strong> <a href="mailto:impcvelho@gmail.com" style="color:#0056b3; font-weight:700;">impcvelho@gmail.com</a> · <a href="mailto:jchagaca@gmail.com" style="color:#0056b3; font-weight:700;">jchagaca@gmail.com</a></p>
+        <p><strong>Telefones / Celular:</strong> +258 824 210 680 · +258 849 083 748</p>
+        <p><strong>Secretaria Geral:</strong> 87 25 84 012</p>
+      </div>
+    </div>
+
+    <!-- Robo de Reclamação / Sugestão footer widget removed as requested -->
+
+    <!-- Admin Panel (hidden by default) -->
+    <div id="admin-panel" style="display:none; padding:18px; max-width:1100px; margin:80px auto 40px;">
+      <header style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <h2 style="margin:0;color:var(--primary-color)">Painel Administrador</h2>
+        <div style="font-size:0.9rem;color:#445">Área restrita · Ações locais</div>
+      </header>
+
+      <!-- NEW: Estatísticas resumidas -->
+      <section id="admin-stats" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:12px;">
+        <div class="results-card" style="padding:10px;">
+          <div style="font-size:0.9rem;color:#666">Feedbacks (locais)</div>
+          <div id="stat-feedback-count" style="font-weight:800;font-size:1.3rem;margin-top:6px">0</div>
+        </div>
+        <div class="results-card" style="padding:10px;">
+          <div style="font-size:0.9rem;color:#666">Manuais</div>
+          <div id="stat-manuals-count" style="font-weight:800;font-size:1.3rem;margin-top:6px">0</div>
+        </div>
+        <div class="results-card" style="padding:10px;">
+          <div style="font-size:0.9rem;color:#666">Doenças (artigos)</div>
+          <div id="stat-diseases-count" style="font-weight:800;font-size:1.3rem;margin-top:6px">0</div>
+        </div>
+        <div class="results-card" style="padding:10px;">
+          <div style="font-size:0.9rem;color:#666">MedG — Nível 1 Passou</div>
+          <div id="stat-medg-l1" style="font-weight:800;font-size:1.1rem;margin-top:6px">—</div>
+        </div>
+        <div class="results-card" style="padding:10px;">
+          <div style="font-size:0.9rem;color:#666">MedG — Nível 2 Passou</div>
+          <div id="stat-medg-l2" style="font-weight:800;font-size:1.1rem;margin-top:6px">—</div>
+        </div>
+        <div class="results-card" style="padding:10px;">
+          <div style="font-size:0.9rem;color:#666">MedG — Nível 3 Passou</div>
+          <div id="stat-medg-l3" style="font-weight:800;font-size:1.1rem;margin-top:6px">—</div>
+        </div>
+      </section>
+
+      <div class="results-card" style="display:grid;gap:10px;">
+        <div>
+          <strong>Feedbacks recebidos (local)</strong>
+          <div id="admin-feedback-list" style="margin-top:8px; max-height:280px; overflow:auto;"></div>
+        </div>
+        <div>
+          <strong>Changelog</strong>
+          <div id="admin-changelog" style="margin-top:8px;"></div>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end">
+          <button id="admin-refresh" class="action-btn">Atualizar</button>
+          <button id="admin-print" class="action-btn" title="Imprimir Painel do Administrador">Imprimir</button>
+          <button id="admin-clear-feedback" class="action-btn" style="background:#c0392b">Limpar feedbacks</button>
+        </div>
+      </div>
+
+      <!-- NEW: Admin metrics & security controls -->
+      <section id="admin-metrics" style="margin-top:12px;">
+        <h3 style="margin-bottom:8px;">Estatísticas e Segurança</h3>
+        <div id="admin-metrics-summary" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin-bottom:12px;">
+          <div class="results-card"><div style="font-size:0.9rem;color:#666">Acessos Hoje</div><div id="stat-access-daily" style="font-weight:800;font-size:1.2rem">0</div></div>
+          <div class="results-card"><div style="font-size:0.9rem;color:#666">Acessos Semanal</div><div id="stat-access-weekly" style="font-weight:800;font-size:1.2rem">0</div></div>
+          <div class="results-card"><div style="font-size:0.9rem;color:#666">Acessos Mensais</div><div id="stat-access-monthly" style="font-weight:800;font-size:1.2rem">0</div></div>
+          <div class="results-card"><div style="font-size:0.9rem;color:#666">Usuários Ativos (últimas 24h)</div><div id="stat-active-users" style="font-weight:800;font-size:1.2rem">0</div></div>
+          <div class="results-card"><div style="font-size:0.9rem;color:#666">Livros Mais Acessados</div><div id="stat-top-books" style="font-weight:700;font-size:0.95rem;margin-top:6px;color:#333">—</div></div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 360px;gap:12px;align-items:start;">
+          <div>
+            <div class="results-card">
+              <strong>Gráfico — Tentativas por data</strong>
+              <canvas id="chart-attempts" width="800" height="260" style="width:100%;height:260px;"></canvas>
+            </div>
+
+            <div class="results-card" style="margin-top:12px;">
+              <strong>Pesquisas mais realizadas</strong>
+              <div id="admin-top-searches" style="margin-top:8px;color:#333"></div>
+            </div>
+
+            <div class="results-card" style="margin-top:12px;">
+              <strong>Tempo médio de leitura (min)</strong>
+              <div id="admin-avg-read-time" style="margin-top:8px;color:#0b845e;font-weight:700">—</div>
+              <strong style="margin-top:8px;display:block">Taxa de conclusão média</strong>
+              <div id="admin-avg-completion" style="margin-top:8px;color:#07364a;font-weight:700">—</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="results-card">
+              <strong>Últimos logins</strong>
+              <div id="admin-recent-logins" style="margin-top:8px; max-height:140px; overflow:auto;"></div>
+            </div>
+
+            <div class="results-card" style="margin-top:12px;">
+              <strong>Sessões ativas / Segurança</strong>
+              <div style="margin-top:8px;">
+                <div id="admin-sessions-list" style="max-height:160px;overflow:auto;"></div>
+                <div style="display:flex;gap:8px;margin-top:10px;justify-content:flex-end">
+                  <button id="admin-end-suspicious" class="action-btn" style="background:#c0392b">Encerrar sessão suspeita</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="results-card" style="margin-top:12px;">
+              <strong>Última localização IP</strong>
+              <div id="admin-last-ip" style="margin-top:8px;color:#333"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <script>
+      // toggle chat window & handle opening Gmail/mailto with validation
+      (function(){
+        const roboBtn = document.getElementById('roboBtn');
+        const chatWindow = document.getElementById('chatWindow');
+        const sendBtn = document.getElementById('sendBtn');
+        const alertMsg = document.getElementById('alertMsg');
+        roboBtn && roboBtn.addEventListener('click', () => {
+          if(!chatWindow) return;
+          chatWindow.style.display = chatWindow.style.display === 'none' ? 'block' : 'none';
+          // focus email input when opening
+          if(chatWindow.style.display === 'block'){
+            const inp = document.getElementById('userEmail'); if(inp) setTimeout(()=> inp.focus(), 80);
+          }
+        });
+        sendBtn && sendBtn.addEventListener('click', ()=> {
+          const emailInput = document.getElementById('userEmail');
+          const email = emailInput ? emailInput.value.trim() : '';
+          // simple email validation (require @ and .)
+          const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+          if(!email){
+            alertMsg.style.display = 'block';
+            alertMsg.textContent = 'Por favor, digite seu e-mail.';
+            return;
+          }
+          if(!valid){
+            alertMsg.style.display = 'block';
+            alertMsg.textContent = 'Por favor, insira um e-mail válido.';
+            return;
+          }
+          alertMsg.style.display = 'none';
+          // Use mailto on mobile devices (open native mail app). On desktop optionally open Gmail web in new tab.
+          const recipient = 'mensageirosftmoz@gmail.com';
+          const subject = encodeURIComponent('Reclamação ou Sugestão — IMPCV');
+          const bodyText = encodeURIComponent(`Remetente: ${email}\n\nEscreva a sua reclamação ou sugestão aqui:\n\n`);
+          const mailto = `mailto:${encodeURIComponent(recipient)}?subject=${subject}&body=${bodyText}`;
+          const isMobile = /Android|iPhone|iPad|iPod|Mobile|Opera Mini/i.test(navigator.userAgent || '');
+          if(isMobile){
+            // Open native mail client via mailto (preferred on phones)
+            window.location.href = mailto;
+          } else {
+            // Desktop: open Gmail web compose in a new tab and also fallback to mailto if popup blocked
+            const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(recipient)}&su=${subject}&body=${bodyText}`;
+            const opened = window.open(gmailUrl, '_blank');
+            if(!opened){
+              // fallback to mailto
+              window.location.href = mailto;
+            }
+          }
+        });
+        // close chat when clicking outside
+        document.addEventListener('click', (ev)=>{
+          const chat = document.getElementById('chatWindow');
+          const btn = document.getElementById('roboBtn');
+          if(!chat || !btn) return;
+          if(chat.style.display === 'block' && !chat.contains(ev.target) && ev.target !== btn){
+            chat.style.display = 'none';
+          }
+        });
+        // support Escape to close
+        document.addEventListener('keydown', (e)=> {
+          if(e.key === 'Escape'){
+            const chat = document.getElementById('chatWindow');
+            if(chat && chat.style.display === 'block') chat.style.display = 'none';
+          }
+        });
+      })();
+    </script>
+
+    <script>
+      // set current year in footer
+      (function(){ const y = new Date().getFullYear(); const el = document.getElementById('ano'); if(el) el.textContent = y; })();
+    </script>
+    <!-- E-mail Atendimento handler removed -->
+</body>
+</html>

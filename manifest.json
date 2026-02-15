@@ -1,0 +1,22 @@
+{
+  "name": "Biblioteca-IMPCV",
+  "short_name": "IMPCV",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0A66FF",
+  "icons": [
+    {
+      "src": "/link.hrefIMG_20251018_044950.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/link.hrefIMG_20251018_044950.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ]
+}

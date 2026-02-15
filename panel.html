@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel | BIBLIOTECA VIRTUAL IMPCV</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden; /* Evita barras de rolagem duplas */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f7fb;
+        }
+
+        /* Container que ocupa toda a tela abaixo do cabeçalho do Websim */
+        .wrapper {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* O iFrame que carrega sua aplicação Base44 */
+        iframe {
+            flex-grow: 1;
+            width: 100%;
+            border: none;
+        }
+
+        /* Estilo opcional para um botão flutuante ou menu dentro do Websim */
+        .nav-helper {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            font-size: 14px;
+            z-index: 9999;
+        }
+
+        /* small accessibility focus outline for keyboard users */
+        .nav-helper:focus { outline: 3px solid rgba(0,123,255,0.28); }
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">
+        <iframe 
+            src="https://fhhnsjjjfhnnmkkkkugdsfhjkkjjfdghjjhh.base44.app/Dashboard" 
+            allow="camera; microphone; geolocation; clipboard-read; clipboard-write"
+            title="Biblioteca Virtual IMPCV">
+        </iframe>
+
+        <a class="nav-helper" href="#" id="open-iframe-in-tab" target="_blank" rel="noopener">Abrir em Nova Aba</a>
+    </div>
+
+    <script>
+      // make the helper button open the same iframe src in a new tab (safer fallback if embedding blocked)
+      (function(){
+        const btn = document.getElementById('open-iframe-in-tab');
+        const iframe = document.querySelector('iframe');
+        if(!btn || !iframe) return;
+        btn.addEventListener('click', (e)=>{
+          e.preventDefault();
+          const url = iframe.getAttribute('src') || window.location.href;
+          const opened = window.open(url, '_blank', 'noopener');
+          if(!opened){
+            // if popup blocked, navigate the current tab
+            window.location.href = url;
+          }
+        });
+      })();
+    </script>
+
+</body>
+</html>
